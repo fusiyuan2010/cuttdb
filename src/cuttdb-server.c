@@ -874,8 +874,8 @@ static void process_stat(conn *c, token_t *tokens, const size_t ntokens) {
         pos += sprintf(pos, "STAT record_cache_misses %lu\r\n", db_stat.rcmiss);
         pos += sprintf(pos, "STAT page_cache_hits %lu\r\n", db_stat.pchit);
         pos += sprintf(pos, "STAT page_cache_misses %lu\r\n", db_stat.pcmiss);
-        pos += sprintf(pos, "STAT read_latency_avg  %u\r\n", db_stat.ilatcy);
-        pos += sprintf(pos, "STAT write_latency_avg %u\r\n", db_stat.olatcy);
+        pos += sprintf(pos, "STAT read_latency_avg  %u\r\n", db_stat.rlatcy);
+        pos += sprintf(pos, "STAT write_latency_avg %u\r\n", db_stat.wlatcy);
         pos += sprintf(pos, "END");
         STATS_UNLOCK();
         out_string(c, temp);

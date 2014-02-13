@@ -46,10 +46,10 @@ Usage
 -----
 ### compile & use the library
 ```sh
- $ svn co "http://cuttdb.googlecode.com/svn/trunk/" cuttdb
- $ cd cuttdb/src ; make ; sudo make install
- $ vim test.c
- $ gcc test.c -lcuttdb; mkdir testdb; ./a.out
+$ git clone "http://cuttdb.googlecode.com/svn/trunk/" cuttdb
+$ cd cuttdb/src ; make ; sudo make install
+$ vim test.c
+$ gcc test.c -lcuttdb; mkdir testdb; ./a.out
 ```
 contents in test.c :
 ```c
@@ -60,7 +60,7 @@ int main()
 {
     CDB *db = cdb_new();
     cdb_option(db, 20000, 16, 16);
-    if (cdb_open(db, "/tmp/testdb/", CDB_CREAT) < 0) {
+    if (cdb_open(db, "./testdb/", CDB_CREAT) < 0) {
         printf("Open Failed\n");
         return -1;
     }
@@ -74,10 +74,10 @@ int main()
 }
 ```
 
- ### Server version:
+### Server version:
 ```sh
- $ ./cuttdb-server -H /data/testdb -r 0 -P 1024 -n 100000 -d -t 4
- $ telnet 127.0.0.1 8964
+$ ./cuttdb-server -H /data/testdb -r 0 -P 1024 -n 100000 -d -t 4
+$ telnet 127.0.0.1 8964
  
 
 Trying 127.0.0.1...
