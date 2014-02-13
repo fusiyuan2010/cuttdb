@@ -151,8 +151,8 @@ static void _cdb_flushdpagetask(void *arg)
             struct timespec ts;
             _cdb_timerreset(&ts);
             db->vio->wpage(db->vio, page, &off);
-            db->ocount++;
-            db->otime += _cdb_timermicrosec(&ts);
+            db->wcount++;
+            db->wtime += _cdb_timermicrosec(&ts);
             db->mtable[bid] = off;
 
             /* move the clean page into pcache */
@@ -447,8 +447,8 @@ static void _cdb_pageout(CDB *db)
             struct timespec ts;
             _cdb_timerreset(&ts);
             db->vio->wpage(db->vio, (CDBPAGE*)cdb_ht_itemval(db->dpcache, item), &off);
-            db->ocount++;
-            db->otime += _cdb_timermicrosec(&ts);
+            db->wcount++;
+            db->wtime += _cdb_timermicrosec(&ts);
             db->mtable[bid] = off;
             cdb_lock_unlock(db->mlock[bid % MLOCKNUM]);
             free(item);
@@ -521,8 +521,8 @@ int cdb_getoff(CDB *db, uint64_t hash, FOFF **offs, int locked)
             struct timespec ts;
             _cdb_timerreset(&ts);
             ret = db->vio->rpage(db->vio, &page, db->mtable[bid]);
-            db->icount++;
-            db->itime += _cdb_timermicrosec(&ts);
+            db->rcount++;
+            db->rtime += _cdb_timermicrosec(&ts);
 
             /* read page error, return */
             if (ret < 0) {
@@ -620,8 +620,8 @@ int cdb_replaceoff(CDB *db, uint64_t hash, FOFF off, FOFF noff, int locked)
             struct timespec ts;
             _cdb_timerreset(&ts);
             ret = db->vio->rpage(db->vio, &page, db->mtable[bid]);
-            db->icount++;
-            db->itime += _cdb_timermicrosec(&ts);
+            db->rcount++;
+            db->rtime += _cdb_timermicrosec(&ts);
             
             if (ret < 0) {
                 if (locked == CDB_NOTLOCKED) cdb_lock_unlock(db->mlock[bid % MLOCKNUM]);
@@ -681,8 +681,8 @@ int cdb_replaceoff(CDB *db, uint64_t hash, FOFF off, FOFF noff, int locked)
         struct timespec ts;
         _cdb_timerreset(&ts);
         db->vio->wpage(db->vio, page, &poff);
-        db->ocount++;
-        db->otime += _cdb_timermicrosec(&ts);
+        db->wcount++;
+        db->wtime += _cdb_timermicrosec(&ts);
 
         db->mtable[bid] = poff;
         if (page != (CDBPAGE *)sbuf) 
@@ -748,8 +748,8 @@ int cdb_updatepage(CDB *db, uint64_t hash, FOFF off, int opt, int locked)
             struct timespec ts;
             _cdb_timerreset(&ts);
             ret = db->vio->rpage(db->vio, &page, db->mtable[bid]);
-            db->icount++;
-            db->itime += _cdb_timermicrosec(&ts);
+            db->rcount++;
+            db->rtime += _cdb_timermicrosec(&ts);
 
             if (ret < 0) {
                 if (locked == CDB_NOTLOCKED) cdb_lock_unlock(db->mlock[bid % MLOCKNUM]);
@@ -883,8 +883,8 @@ int cdb_updatepage(CDB *db, uint64_t hash, FOFF off, int opt, int locked)
             struct timespec ts;
             _cdb_timerreset(&ts);
             db->vio->wpage(db->vio, page, &off);
-            db->ocount++;
-            db->otime += _cdb_timermicrosec(&ts);
+            db->wcount++;
+            db->wtime += _cdb_timermicrosec(&ts);
 
             db->mtable[bid] = off;
             if (page != (CDBPAGE *)sbuf2
@@ -1009,8 +1009,8 @@ int cdb_set2(CDB *db, const char *key, int ksize, const char *val, int vsize, in
             struct timespec ts;
             _cdb_timerreset(&ts);
             cret = db->vio->rrec(db->vio, &rrec, soff[i], false);
-            db->icount++;
-            db->itime += _cdb_timermicrosec(&ts);
+            db->rcount++;
+            db->rtime += _cdb_timermicrosec(&ts);
             
             if (cret < 0)
                 continue;
@@ -1052,8 +1052,8 @@ int cdb_set2(CDB *db, const char *key, int ksize, const char *val, int vsize, in
         cdb_lock_unlock(db->mlock[lockid]);
         return -1;
     }
-    db->ocount++;
-    db->otime += _cdb_timermicrosec(&ts);
+    db->wcount++;
+    db->wtime += _cdb_timermicrosec(&ts);
     
     if (OFFNOTNULL(ooff)) {
         cdb_replaceoff(db, hash, ooff, noff, CDB_LOCKED);
@@ -1150,8 +1150,8 @@ int cdb_get(CDB *db, const char *key, int ksize, void **val, int *vsize)
         struct timespec ts;
         _cdb_timerreset(&ts);
         cret = db->vio->rrec(db->vio, &rec, offs[i], true);
-        db->icount++;
-        db->itime += _cdb_timermicrosec(&ts);
+        db->rcount++;
+        db->rtime += _cdb_timermicrosec(&ts);
 
         if (cret < 0)
             continue;
@@ -1275,8 +1275,8 @@ int cdb_del(CDB *db, const char *key, int ksize)
             struct timespec ts;
             _cdb_timerreset(&ts);
             cret = db->vio->rrec(db->vio, &rrec, soff[i], false);
-            db->icount++;
-            db->itime += _cdb_timermicrosec(&ts);
+            db->rcount++;
+            db->rtime += _cdb_timermicrosec(&ts);
             
             if (cret < 0)
                 continue;
@@ -1303,8 +1303,8 @@ int cdb_del(CDB *db, const char *key, int ksize)
         _cdb_timerreset(&ts);
         if (db->vio->drec(db->vio, &rec, ooff) < 0)
             ; // return -1;  succeed or not doesn't matter
-        db->ocount++;
-        db->otime += _cdb_timermicrosec(&ts);
+        db->wcount++;
+        db->wtime += _cdb_timermicrosec(&ts);
         cdb_seterrno(db, CDB_SUCCESS, __FILE__, __LINE__);
         return 0;
     } else {
@@ -1320,8 +1320,8 @@ void cdb_stat(CDB *db, CDBSTAT *stat)
     if (stat == NULL) {
         db->rchit = db->rcmiss = 0;
         db->pchit = db->pcmiss = 0;
-        db->icount = db->itime = 0;
-        db->ocount = db->otime = 0;
+        db->rcount = db->rtime = 0;
+        db->wcount = db->wtime = 0;
     } else {
         stat->rnum = db->rnum;
         stat->rcnum = db->rcache? db->rcache->num : 0;
@@ -1332,8 +1332,8 @@ void cdb_stat(CDB *db, CDBSTAT *stat)
         stat->rcmiss = db->rcmiss;
         stat->pchit = db->pchit;
         stat->pcmiss = db->pcmiss;
-        stat->ilatcy = db->icount ? db->itime / db->icount : 0;
-        stat->olatcy = db->ocount ? db->otime / db->ocount : 0;
+        stat->rlatcy = db->rcount ? db->rtime / db->rcount : 0;
+        stat->wlatcy = db->wcount ? db->wtime / db->wcount : 0;
     }
 }
 

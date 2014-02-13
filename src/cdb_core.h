@@ -101,13 +101,13 @@ struct CDB
     uint64_t pchit;
     uint64_t pcmiss;
     /* cumulative disk read time */
-    uint64_t itime;
+    uint64_t rtime;
     /* number of disk read operation */
-    uint64_t icount;
+    uint64_t rcount;
     /* cumulative disk write time */
-    uint64_t otime;
+    uint64_t wtime;
     /* number of disk write operation */
-    uint64_t ocount;
+    uint64_t wcount;
 };
 
 

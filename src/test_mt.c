@@ -121,9 +121,9 @@ int main(int argc, char *argv[])
     while(1) {
         CDBSTAT st;
         cdb_stat(db, &st);
-        printf("rnum: %lu, rcnum: %lu, pnum: %lu, pcnum %lu, ilatcy: %u  olatcy: %u"
+        printf("rnum: %lu, rcnum: %lu, pnum: %lu, pcnum %lu, rlatcy: %u  wlatcy: %u"
                 " rh/m: %lu/%lu ph/m: %lu/%lu\n",
-                st.rnum, st.rcnum, st.pnum, st.pcnum, st.ilatcy, st.olatcy,
+                st.rnum, st.rcnum, st.pnum, st.pcnum, st.rlatcy, st.wlatcy,
                 st.rchit, st.rcmiss, st.pchit, st.pcmiss);
         if (++clear_interval % 20 == 0)
             cdb_stat(db, NULL);

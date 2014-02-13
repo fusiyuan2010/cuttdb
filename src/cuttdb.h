@@ -45,9 +45,9 @@ typedef struct {
     /* cache miss of page cache */
     uint64_t pcmiss;
     /* average disk read latency */
-    uint32_t ilatcy;
+    uint32_t rlatcy;
     /* average disk write latency */
-    uint32_t olatcy;
+    uint32_t wlatcy;
 } CDBSTAT;
 
 /* options to open a database*/
