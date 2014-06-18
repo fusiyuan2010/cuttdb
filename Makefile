@@ -1,4 +1,5 @@
 #!/bin/sh
+#build a prototype k-v database
 
 OPT=-O2
 DEBUG=-g
